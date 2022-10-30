@@ -95,8 +95,28 @@ aws_upload_successful=$?
 if [ $aws_upload_successful -ne 0 ]
 then
   echo "error uploading to s3..."
-  ext 1
+  exit 1
 else
   echo "successfully uploaded to the s3 bucket..."
+fi
+echo "---------------------------------------------------------"
+
+tar_file_size=$(ls -lh /tmp/$tar_file_name | awk '{print $5}')
+# Inventory file related
+if [ -e $inventory_file ]
+then
+	echo "inventory file is already present, hence will be updated..."
+	echo "<p>httpd-logs &emsp;&emsp;&emsp;&emsp; $timestamp &emsp;&emsp;&emsp;&emsp; tar &emsp;&emsp;&emsp;&emsp; $tar_file_size </p>" >> $inventory_file
+else
+	echo "inventory file is not present. will create one now..."
+	echo "<h3>Log &emsp;&emsp;&emsp;&emsp; Time created &emsp;&emsp;&emsp;&emsp; Type &emsp;&emsp;&emsp;&emsp; Size</h3>" > $inventory_file
+	echo "<p>httpd-logs &emsp;&emsp;&emsp;&emsp; $timestamp &emsp;&emsp;&emsp;&emsp; tar &emsp;&emsp;&emsp;&emsp; $tar_file_size </p>" >> $inventory_file
+fi
+echo "---------------------------------------------------------"
+
+if [ ! -e $cron_file_location ]
+then
+	echo "cron job does not exist, adding one now..."
+	echo "0 0 * * * root /root/Automation_Project/automation.sh" > $cron_file_location
 fi
 echo "---------------------------------------------------------"
