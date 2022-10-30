@@ -95,7 +95,7 @@ aws_upload_successful=$?
 if [ $aws_upload_successful -ne 0 ]
 then
   echo "error uploading to s3..."
-  ext 1
+  exit 1
 else
   echo "successfully uploaded to the s3 bucket..."
 fi
